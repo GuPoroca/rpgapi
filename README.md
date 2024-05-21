@@ -1,0 +1,1 @@
+# Api teste para simular batalha de um minigame de rpg's
