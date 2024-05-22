@@ -21,7 +21,7 @@ const battlerController = new BattlerController();
     battlerController.storeChar(request, response)
   );
   
-  routes.put('/api/battler/:id', (request, response) =>
+  routes.patch('/api/battler/:id', (request, response) =>
     battlerController.updateChar(request, response)
   );
   

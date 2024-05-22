@@ -14,8 +14,8 @@ let characters = [];
 
 //Personagens de teste:
 characters.push({
-    "id": "123",
-    "nome": "Poroca Mago",
+  "id": "123",
+  "nome": "Poroca Mago",
 	"raca": "Elfo",
 	"classe": "Mago",
 	"vida": 20,
@@ -23,8 +23,8 @@ characters.push({
 	"defesa": 7
 });
 characters.push({
-    "id": "456",
-    "nome": "Poroca Guerreiro",
+  "id": "456",
+  "nome": "Poroca Guerreiro",
 	"raca": "Humano",
 	"classe": "Guerreiro",
 	"vida": 35,
@@ -59,20 +59,22 @@ export default class BattlerController {
         const ids = request.body;
         const char1 = characters.find((character) => character.id === ids.id1);
         const char2 = characters.find((character) => character.id === ids.id2);
+        if (!char1 || !char2) {
+          return response.status(404).send({ message: 'Character not found.' });
+        }
+        response.status(200).send(this.calculaVencedor(char1,char2));
+    }
 
-        let turnos1 = this.turnosParaVencer(char2.vida, char2.defesa, char1.ataque);
-        let turnos2 = this.turnosParaVencer(char1.vida, char1.defesa, char2.ataque);
-        console.log(`turnos para 1 conseguir ganhar: ${turnos1}`);
-        console.log(`turnos para 2 conseguir ganhar: ${turnos2}`);
-        if(turnos1 == turnos2) return response.status(200).send("Empate!");
-        let resposta = {message: (turnos1<turnos2) ? `O personagem ${char1.nome} ganhou!` : `O personagem ${char2.nome} ganhou!`};
-        response.status(200).send(resposta);
+    calculaVencedor(char1, char2){
+      let turnos1 = this.turnosParaVencer(char2.vida, char2.defesa, char1.ataque);
+      let turnos2 = this.turnosParaVencer(char1.vida, char1.defesa, char2.ataque);
+      if(turnos1 == turnos2) return {message: "Empate!"};
+      return {message: (turnos1<turnos2) ? `O personagem ${char1.nome} ganhou!` : `O personagem ${char2.nome} ganhou!`};
     }
 
     turnosParaVencer(vida1, defesa1, ataque2){
         if(ataque2<=defesa1) return Infinity;
         return vida1/(ataque2-defesa1);
-        
     }
 
     storeChar(request, response) {
@@ -104,26 +106,20 @@ export default class BattlerController {
         const { id } = request.params;
         const updatedCharacter = request.body;
 
-        const character = characters.find((character) => character.id === id);
+        const characterToBeUpdated = characters.find((character) => character.id === id);
     
-        if (!character) {
+        if (!characterToBeUpdated) {
           return response.status(404).send({ message: 'Character not found.' });
         }
-    
+        
         const newcharacters = characters.map((character) => {
           if (character.id === id) {
             return {
-              nome: character.nome,
-              raca: character.raca,
-              classe: character.classe,
-              vida: character.vida,
-              ataque: character.ataque,
-              defesa: character.defesa,
-              id: id,
+              ...characterToBeUpdated,
               ...updatedCharacter,
             };
           }
-    
+          
           return character;
         });
     
@@ -134,9 +130,14 @@ export default class BattlerController {
 
     destroyChar(request, response) {
         const { id } = request.params;
-    
+        const oldCharacters = characters;
+
         characters = characters.filter((character) => character.id !== id);
+        if (JSON.stringify(oldCharacters) == JSON.stringify(characters)) {
+          console.log("eh igual");
+          return response.status(404).send({ message: 'Character not found.' });
+        }
     
-        response.status(204).send({ message: `Character ${id} Deleted` });
+        response.status(200).send({ message: `Character ${id} Deleted` });
     }
 }
