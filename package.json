@@ -11,6 +11,7 @@
   "author": "Gustavo Poroca",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.14.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
@@ -19,6 +20,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "prisma": "^5.14.0"
   }
 }
